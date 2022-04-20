@@ -44,14 +44,14 @@ class Trainer(object):
                     shaped_reward = (1 + p_dt) * reward
                     cum_discounted_reward = self.pg.calc_cum_discounted_reward(shaped_reward, all_critic_values)
                 else:
-                    cum_discounted_reward = self.pg.calc_cum_discounted_reward(reward)
+                    cum_discounted_reward = self.pg.calc_cum_discounted_reward(reward, all_critic_values)
                 reinfore_loss, final_reward = self.pg.calc_reinforce_loss(all_loss, all_logits, all_critic_values, cum_discounted_reward)
                 ## to be done:
                 # critic_loss = MSE(all_critic_values, tagets)
                 # actor_critic_loss = reinfore_loss + critic_loss
                 # criterion = torch.nn.MSELoss()
                 critic_loss = final_reward.pow(2).mean()
-                actor_critic_loss = reinfore_loss + 0.2 * critic_loss
+                actor_critic_loss = reinfore_loss + self.args.Critic_weight * critic_loss
                 #self.pg.baseline.update(torch.mean(cum_discounted_reward))
                 self.pg.now_epoch += 1
 
