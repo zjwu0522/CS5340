@@ -1,8 +1,5 @@
-# TITer
+# Uncertainty Modeling in AI
 
-This is the data and coded for our EMNLP 2021 paper **TimeTraveler: Reinforcement Learning for Temporal Knowledge Graph Forecasting**
-
-![TITer](./img/main.jpg)
 
 ### Qucik Start
 
@@ -34,16 +31,6 @@ you can run as following:
 python3 main.py --data_path data/ICEWS14 --cuda --do_test --IM --load_model_path xxxxx
 ```
 
-### Acknowledgments
-model/dirichlet.py is from https://github.com/ericsuh/dirichlet
 
-### Cite
 
-```
-@inproceedings{Haohai2021TITer,
-	title={TimeTraveler: Reinforcement Learning for Temporal Knowledge Graph Forecasting},
-	author={Haohai Sun, Jialun Zhong, Yunpu Ma, Zhen Han, Kun He.},
-	booktitle={EMNLP},
-	year={2021}
-}
-```
+
