@@ -1,4 +1,5 @@
-![TITer](./img/main.jpg)
+# Uncertainty Modeling in AI
+
 
 ### Qucik Start
 
@@ -30,9 +31,6 @@ you can run as following:
 python3 main.py --data_path data/ICEWS14 --cuda --do_test --IM --load_model_path xxxxx
 ```
 
-### Acknowledgments
-model/dirichlet.py is from https://github.com/ericsuh/dirichlet
 
-### Cite
 
 
