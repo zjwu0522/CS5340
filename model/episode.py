@@ -145,7 +145,7 @@ class Episode(nn.Module):
         current_timestamps = torch.gather(action_space[:, :, 2], dim=1, index=top_k_action_id).reshape(-1) # [batch_size * beam_size]
         prev_relations = torch.gather(action_space[:, :, 0], dim=1, index=top_k_action_id).reshape(-1)  # [batch_size * beam_size]
         self.agent.policy_step.hx = self.agent.policy_step.hx.repeat(1, 1, beam_size).reshape([batch_size * beam_size, -1])  # [batch_size * beam_size, state_dim]
-        self.agent.policy_step.cx = self.agent.policy_step.cx.repeat(1, 1, beam_size).reshape([batch_size * beam_size, -1])  # [batch_size * beam_size, state_dim]
+        #self.agent.policy_step.cx = self.agent.policy_step.cx.repeat(1, 1, beam_size).reshape([batch_size * beam_size, -1])  # [batch_size * beam_size, state_dim]
 
         beam_tmp = beam_log_prob.repeat([action_space_size, 1]).transpose(1, 0)  # [batch_size * beam_size, max_action_num]
         for t in range(1, self.path_length):
@@ -169,7 +169,7 @@ class Episode(nn.Module):
             ) # logits.shape [bs * rollouts_num, max_action_num]
 
             hx_tmp = self.agent.policy_step.hx.reshape(batch_size, beam_size, -1)
-            cx_tmp = self.agent.policy_step.cx.reshape(batch_size, beam_size, -1)
+           # cx_tmp = self.agent.policy_step.cx.reshape(batch_size, beam_size, -1)
 
             beam_tmp = beam_log_prob.repeat([action_space_size, 1]).transpose(1, 0) # [batch_size * beam_size, max_action_num]
             beam_tmp += logits
@@ -185,8 +185,8 @@ class Episode(nn.Module):
             offset = offset.unsqueeze(-1).repeat(1, 1, self.config['state_dim'])  # [batch_size, beam_size]
             self.agent.policy_step.hx = torch.gather(hx_tmp, dim=1, index=offset)
             self.agent.policy_step.hx = self.agent.policy_step.hx.reshape([batch_size * beam_size, -1])
-            self.agent.policy_step.cx = torch.gather(cx_tmp, dim=1, index=offset)
-            self.agent.policy_step.cx = self.agent.policy_step.cx.reshape([batch_size * beam_size, -1])
+            #self.agent.policy_step.cx = torch.gather(cx_tmp, dim=1, index=offset)
+            #self.agent.policy_step.cx = self.agent.policy_step.cx.reshape([batch_size * beam_size, -1])
 
             current_entites = torch.gather(action_space[:, :, 1].reshape(batch_size, -1), dim=1, index=top_k_action_id).reshape(-1)
             current_timestamps = torch.gather(action_space[:, :, 2].reshape(batch_size, -1), dim=1, index=top_k_action_id).reshape(-1)

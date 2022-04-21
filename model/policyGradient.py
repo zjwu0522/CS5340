@@ -18,8 +18,8 @@ class PG(object):
          return reward
 
     def calc_cum_discounted_reward(self, rewards, all_critic_values):
-        running_add = torch.zeros([rewards.shape[0]])
-        all_critic_values_tensor = torch.stack(all_critic_values, dim=-1).squeeze(dim=1)
+        # running_add = torch.zeros([rewards.shape[0]]) 
+        running_add = torch.stack(all_critic_values, dim=-1).squeeze(dim=1)[:, -1] * self.config['phi']
         cum_disc_reward = torch.zeros([rewards.shape[0], self.config['path_length']]) # shape: [batchsize, path_length]
         if self.config['cuda']:
             running_add = running_add.cuda()
@@ -27,7 +27,8 @@ class PG(object):
 
         cum_disc_reward[:, self.config['path_length'] - 1] = rewards
         for t in reversed(range(self.config['path_length'])): 
-            running_add = self.config['gamma'] * running_add * all_critic_values_tensor[:, t+1] + cum_disc_reward[:, t] 
+            running_add = self.config['gamma'] * running_add + cum_disc_reward[:, t] 
+            # running_add = self.config['gamma'] * running_add + cum_disc_reward[:, t]  
             # all_critic_values.shape: [batchsize, pathlength + 1]
             cum_disc_reward[:, t] = running_add 
         return cum_disc_reward # shape: [batchsize, pathlength] 
@@ -42,7 +43,7 @@ class PG(object):
     def calc_reinforce_loss(self, all_loss, all_logits, all_critic_values, cum_discounted_reward):
         loss = torch.stack(all_loss, dim=1)
         critic_values = torch.stack(all_critic_values, dim=-1).squeeze(dim=1)
-        final_reward = cum_discounted_reward - critic_values[:, :-1]
+        final_reward = cum_discounted_reward - critic_values[:, :-1] * self.config['phi']
         # cum_discounted_reward.shape: [batchsize, pathlength]
         # critic_values.shape: [batchsize, pathlength + 1]
 

@@ -3,27 +3,48 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
+# class HistoryEncoder(nn.Module):
+#     def __init__(self, config):
+#         super(HistoryEncoder, self).__init__()
+#         self.config = config
+#         self.lstm_cell = torch.nn.LSTMCell(input_size=config['action_dim'],
+#                                            hidden_size=config['state_dim'])
+
+#     def set_hiddenx(self, batch_size):
+#         """Set hidden layer parameters. Initialize to 0"""
+#         if self.config['cuda']:
+#             self.hx = torch.zeros(batch_size, self.config['state_dim'], device='cuda')
+#             self.cx = torch.zeros(batch_size, self.config['state_dim'], device='cuda')
+#         else:
+#             self.hx = torch.zeros(batch_size, self.config['state_dim'])
+#             self.cx = torch.zeros(batch_size, self.config['state_dim'])
+
+#     def forward(self, prev_action, mask):
+#         """mask: True if NO_OP. ON_OP does not affect history coding results"""
+#         self.hx_, self.cx_ = self.lstm_cell(prev_action, (self.hx, self.cx))
+#         self.hx = torch.where(mask, self.hx, self.hx_)
+#         self.cx = torch.where(mask, self.cx, self.cx_)
+#         return self.hx
+
 class HistoryEncoder(nn.Module):
     def __init__(self, config):
         super(HistoryEncoder, self).__init__()
         self.config = config
-        self.lstm_cell = torch.nn.LSTMCell(input_size=config['action_dim'],
-                                           hidden_size=config['state_dim'])
+        self.gru_cell = torch.nn.GRUCell(
+            input_size=config['action_dim'], 
+            hidden_size=config['state_dim'])
 
     def set_hiddenx(self, batch_size):
         """Set hidden layer parameters. Initialize to 0"""
         if self.config['cuda']:
             self.hx = torch.zeros(batch_size, self.config['state_dim'], device='cuda')
-            self.cx = torch.zeros(batch_size, self.config['state_dim'], device='cuda')
         else:
             self.hx = torch.zeros(batch_size, self.config['state_dim'])
-            self.cx = torch.zeros(batch_size, self.config['state_dim'])
 
     def forward(self, prev_action, mask):
         """mask: True if NO_OP. ON_OP does not affect history coding results"""
-        self.hx_, self.cx_ = self.lstm_cell(prev_action, (self.hx, self.cx))
+        self.hx_ = self.gru_cell(prev_action, self.hx)
         self.hx = torch.where(mask, self.hx, self.hx_)
-        self.cx = torch.where(mask, self.cx, self.cx_)
         return self.hx
 
 # change
@@ -33,7 +54,7 @@ class PolicyMLP(nn.Module):
         self.mlp_l1= nn.Linear(config['mlp_input_dim'], config['mlp_hidden_dim'], bias=True)
         self.mlp_l2 = nn.Linear(config['mlp_hidden_dim'], config['action_dim'], bias=True)
         self.mlp_l3 = nn.Linear(config['mlp_hidden_dim'], 1)
-
+        
     def forward(self, state_query):
         hidden = torch.relu(self.mlp_l1(state_query))
         output = self.mlp_l2(hidden).unsqueeze(1)
