@@ -1,7 +1,3 @@
-# TITer
-
-This is the data and coded for our EMNLP 2021 paper **TimeTraveler: Reinforcement Learning for Temporal Knowledge Graph Forecasting**
-
 ![TITer](./img/main.jpg)
 
 ### Qucik Start
@@ -39,11 +35,4 @@ model/dirichlet.py is from https://github.com/ericsuh/dirichlet
 
 ### Cite
 
-```
-@inproceedings{Haohai2021TITer,
-	title={TimeTraveler: Reinforcement Learning for Temporal Knowledge Graph Forecasting},
-	author={Haohai Sun, Jialun Zhong, Yunpu Ma, Zhen Han, Kun He.},
-	booktitle={EMNLP},
-	year={2021}
-}
-```
+
